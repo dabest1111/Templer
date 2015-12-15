@@ -19,22 +19,29 @@ namespace TemplerA
 
 
         private static Ability Refraction, Meld, Trap, ptrap;
-        private static Item blink, bkb, phase;
+        private static Item blink, bkb, phase, hex;
         private static readonly Menu Menu = new Menu("TemplerA", "templera", true, "npc_dota_hero_Templar_Assassin", true);
         private static Hero me, target;
         private static bool combo;
+        private static AbilityToggler menuValue;
 
-        
+        private static bool menuvalueSet;
+
+
         static void Main(string[] args)
         {
             Game.OnUpdate += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
             var menu_zuena = new Menu("Options", "opsi");            
-            menu_zuena.AddItem(new MenuItem("enable", "enable").SetValue(true));
-            menu_zuena.AddItem(new MenuItem("useBKB", "useBKB").SetValue(true));
-            menu_zuena.AddItem(new MenuItem("usePb", "usePb").SetValue(true));
+            menu_zuena.AddItem(new MenuItem("enable", "enable").SetValue(true));                       
             Menu.AddSubMenu(menu_zuena);
             Menu.AddToMainMenu();
+            var dict = new Dictionary<string, bool>
+            {
+               {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}
+            };
+            Menu.AddItem(
+                new MenuItem("Items", "Items:").SetValue(new AbilityToggler(dict)));
         }
 
 
@@ -72,7 +79,16 @@ namespace TemplerA
             if (phase == null)
                 phase = me.FindItem("item_phase_boots");
 
-            
+            if (hex == null)
+                hex = me.FindItem("item_sheepstick");
+
+            if (!menuvalueSet)
+            {
+                menuValue = Menu.Item("Items").GetValue<AbilityToggler>();
+                menuvalueSet = true;
+            }
+
+
 
             if (combo && Menu.Item("enable").GetValue<bool>())
             {
@@ -110,17 +126,31 @@ namespace TemplerA
                             Utils.Sleep(150 + Game.Ping, "Refraction");
                         }
 
-                        if (bkb != null && bkb.CanBeCasted() && Utils.SleepCheck("bkb") && Menu.Item("useBKB").GetValue<bool>() && me.Distance2D(target) <= 620)
+                        if (bkb != null && bkb.CanBeCasted() && Utils.SleepCheck("bkb") &&  menuValue.IsEnabled(bkb.Name) && me.Distance2D(target) <= 620)
                         {
                             bkb.UseAbility();
                             Utils.Sleep(150 + Game.Ping, "bkb");
                         }
 
-                        if (blink != null && blink.CanBeCasted() && me.Distance2D(target) > 500 && me.Distance2D(target) <= 1170 && Utils.SleepCheck("blink"))
+                        if (phase != null && phase.CanBeCasted() && Utils.SleepCheck("phase") && menuValue.IsEnabled(phase.Name) && !blink.CanBeCasted() && me.Distance2D(target) >= attackrange)
+                        {
+                            phase.UseAbility();
+                            Utils.Sleep(150 + Game.Ping, "phase");
+                        }
+
+
+                        if (blink != null && blink.CanBeCasted() && menuValue.IsEnabled(blink.Name) &&  me.Distance2D(target) > 500 && me.Distance2D(target) <= 1170 && Utils.SleepCheck("blink"))
                         {
                             blink.UseAbility(target.Position);
                             Utils.Sleep(250 + Game.Ping, "blink");
                         }
+
+                        if (hex != null && hex.CanBeCasted() && menuValue.IsEnabled(hex.Name) && Utils.SleepCheck("hex"))
+                        {
+                            hex.UseAbility(target);
+                            Utils.Sleep(150 + Game.Ping, "hex");
+                        }
+
 
                         if (me.Distance2D(target) <= attackrange && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
                         {
@@ -128,12 +158,7 @@ namespace TemplerA
                             Utils.Sleep(250 + Game.Ping, "Meld");
                         }
 
-                        if (phase != null && phase.CanBeCasted() && Utils.SleepCheck("phase") && Menu.Item("usePb").GetValue<bool>() && Utils.SleepCheck("Meld"))
-                        {
-                            phase.UseAbility();
-                            Utils.Sleep(150 + Game.Ping, "phase");
-                        }
-                                            
+                                
                         if (!Meld.CanBeCasted() && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
                         {
                             me.Attack(target);
