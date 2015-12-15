@@ -70,6 +70,8 @@ namespace TemplerA
             if (phase == null)
                 phase = me.FindItem("item_phase_boots");
 
+            
+
             if (combo && Menu.Item("enable").GetValue<bool>())
             {
                 target = me.ClosestToMouseTarget(1000);
@@ -77,25 +79,29 @@ namespace TemplerA
                 if (target != null && target.IsAlive && !target.IsInvul() && !target.IsIllusion)
                 {
 
-                    var attackrange = 200 + (60 * me.Spellbook.Spell3.Level);
+                    var attackrange = 200 + (60 * me.Spellbook.Spell3.Level);                    
                     if (me.CanAttack() && me.CanCast())
                     {
 
-                        if (ptrap.CanBeCasted() && Trap.CanBeCasted() && Utils.SleepCheck("ptrap") )
+                    
+
+                        var traps = ObjectMgr.GetEntities<Unit>().Where(Unit => Unit.Name == "npc_dota_templar_assassin_psionic_trap").ToList();
+                        foreach (var q in traps)
                         {
-                            ptrap.UseAbility(target.Position);
-                            bool ptrap1 = true;
-                            
-                            Utils.Sleep(30 + Game.Ping, "ptrap");
-                            
-                            if (ptrap1 = true && Trap.CanBeCasted() && Utils.SleepCheck("trap"))
+                            if (target.Position.Distance2D(q.Position) < 370 && q.Spellbook.SpellQ.CanBeCasted())
                             {
-                                Trap.UseAbility();
-                                Utils.Sleep(150 + Game.Ping, "trap");
+                                q.Spellbook.SpellQ.UseAbility();
+                                Utils.Sleep(150 + Game.Ping, "traps");
                             }
                         }
 
-                                                                        
+                        if (ptrap.CanBeCasted() && Utils.SleepCheck ("ptrap"))
+                        {
+                            ptrap.UseAbility(target.Position);
+                            Utils.Sleep(150 + Game.Ping, "ptrap");
+                        }
+
+                                                                                               
                         if (Refraction.CanBeCasted() && Utils.SleepCheck("Refraction"))
                         {
                             Refraction.UseAbility();
