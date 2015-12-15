@@ -20,14 +20,16 @@ namespace TemplerA
 
         private static Ability Refraction, Meld, Trap, ptrap;
         private static Item blink, bkb, phase;
-        private static readonly Menu Menu = new Menu("TemplerA", "templera", true, "npc_dota__hero_Templar_Assassin", true);
+        private static readonly Menu Menu = new Menu("TemplerA", "templera", true, "npc_dota_hero_Templar_Assassin", true);
         private static Hero me, target;
         private static bool combo;
+
+        
         static void Main(string[] args)
         {
             Game.OnUpdate += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
-            var menu_zuena = new Menu("Options", "opsi");
+            var menu_zuena = new Menu("Options", "opsi");            
             menu_zuena.AddItem(new MenuItem("enable", "enable").SetValue(true));
             menu_zuena.AddItem(new MenuItem("useBKB", "useBKB").SetValue(true));
             menu_zuena.AddItem(new MenuItem("usePb", "usePb").SetValue(true));
@@ -79,7 +81,7 @@ namespace TemplerA
                 if (target != null && target.IsAlive && !target.IsInvul() && !target.IsIllusion)
                 {
 
-                    var attackrange = 200 + (60 * me.Spellbook.Spell3.Level);                    
+                    var attackrange = 190 + (60 * me.Spellbook.Spell3.Level);                    
                     if (me.CanAttack() && me.CanCast())
                     {
 
@@ -126,15 +128,12 @@ namespace TemplerA
                             Utils.Sleep(250 + Game.Ping, "Meld");
                         }
 
-                        if (phase != null && phase.CanBeCasted() && Utils.SleepCheck("phase") && Menu.Item("usePb").GetValue<bool>())
+                        if (phase != null && phase.CanBeCasted() && Utils.SleepCheck("phase") && Menu.Item("usePb").GetValue<bool>() && Utils.SleepCheck("Meld"))
                         {
                             phase.UseAbility();
                             Utils.Sleep(150 + Game.Ping, "phase");
                         }
-
-
-                       
-
+                                            
                         if (!Meld.CanBeCasted() && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
                         {
                             me.Attack(target);
