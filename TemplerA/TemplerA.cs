@@ -106,14 +106,14 @@ namespace TemplerA
                         var traps = ObjectMgr.GetEntities<Unit>().Where(Unit => Unit.Name == "npc_dota_templar_assassin_psionic_trap").ToList();
                         foreach (var q in traps)
                         {
-                            if (target.Position.Distance2D(q.Position) < 370 && q.Spellbook.SpellQ.CanBeCasted())
+                            if (target.Position.Distance2D(q.Position) < 370 && q.Spellbook.SpellQ.CanBeCasted() && Utils.SleepCheck("traps") && !target.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow"))
                             {
                                 q.Spellbook.SpellQ.UseAbility();
                                 Utils.Sleep(150 + Game.Ping, "traps");
                             }
                         }
-
-                        if (ptrap.CanBeCasted() && Utils.SleepCheck ("ptrap"))
+                        
+                        if (ptrap.CanBeCasted() && Utils.SleepCheck ("ptrap") && Utils.SleepCheck("traps") && !target.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow"))
                         {
                             ptrap.UseAbility(target.Position);
                             Utils.Sleep(150 + Game.Ping, "ptrap");
