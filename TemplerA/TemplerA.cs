@@ -1,21 +1,21 @@
 ﻿
 
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-    using Ensage;
-    using Ensage.Common;
-    using Ensage.Common.Extensions;
-    using Ensage.Common.Menu;
+using Ensage;
+using Ensage.Common;
+using Ensage.Common.Extensions;
+using Ensage.Common.Menu;
 
-    using SharpDX;
+using SharpDX;
 
 namespace TemplerA
 {
 
     internal class Program
-   { 
+    {
 
 
         private static Ability Refraction, Meld, Trap, ptrap;
@@ -32,9 +32,10 @@ namespace TemplerA
         {
             Game.OnUpdate += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
-            var menu_zuena = new Menu("Options", "opsi");            
-            menu_zuena.AddItem(new MenuItem("enable", "enable").SetValue(true));                       
-            Menu.AddSubMenu(menu_zuena);
+            var menu_zuena = new Menu("Options", "opsi");
+            menu_zuena.AddItem(new MenuItem("enable", "enable").SetValue(true));
+            menu_zuena.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(false));
+            Menu.AddSubMenu(menu_zuena);        
             menu_zuena.AddItem(new MenuItem("comboKey", "Combo Key").SetValue(new KeyBind(32, KeyBindType.Press)));
             Menu.AddToMainMenu();
             var dict = new Dictionary<string, bool>
@@ -90,22 +91,39 @@ namespace TemplerA
             }
 
 
-           
+
 
 
 
             if (combo && Menu.Item("enable").GetValue<bool>())
             {
                 target = me.ClosestToMouseTarget(1000);
-                
+
+                //orbwalk
+                if (target != null && (!target.IsValid || !target.IsVisible || !target.IsAlive || target.Health <= 0))
+                {
+                    target = null;
+                }
+                var canCancel = Orbwalking.CanCancelAnimation();
+                if (canCancel)
+                {
+                    if (target != null && !target.IsVisible && !Orbwalking.AttackOnCooldown(target))
+                    {
+                        target = me.ClosestToMouseTarget(1000);
+                    }
+                    
+                }
+
                 if (target != null && target.IsAlive && !target.IsInvul() && !target.IsIllusion)
                 {
 
-                    var attackrange = 190 + (60 * me.Spellbook.Spell3.Level);                    
+                    var attackrange = 190 + (60 * me.Spellbook.Spell3.Level);
                     if (me.CanAttack() && me.CanCast())
                     {
 
-                    
+
+
+
 
                         var traps = ObjectMgr.GetEntities<Unit>().Where(Unit => Unit.Name == "npc_dota_templar_assassin_psionic_trap").ToList();
                         foreach (var q in traps)
@@ -116,21 +134,21 @@ namespace TemplerA
                                 Utils.Sleep(150 + Game.Ping, "traps");
                             }
                         }
-                        
-                        if (ptrap.CanBeCasted() && Utils.SleepCheck ("ptrap") && Utils.SleepCheck("traps") && !target.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow"))
+
+                        if (ptrap.CanBeCasted() && Utils.SleepCheck("ptrap") && Utils.SleepCheck("traps") && !target.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow"))
                         {
                             ptrap.UseAbility(target.Position);
                             Utils.Sleep(150 + Game.Ping, "ptrap");
                         }
 
-                                                                                               
+
                         if (Refraction.CanBeCasted() && Utils.SleepCheck("Refraction"))
                         {
                             Refraction.UseAbility();
                             Utils.Sleep(150 + Game.Ping, "Refraction");
                         }
 
-                        if (bkb != null && bkb.CanBeCasted() && Utils.SleepCheck("bkb") &&  menuValue.IsEnabled(bkb.Name) && me.Distance2D(target) <= 620)
+                        if (bkb != null && bkb.CanBeCasted() && Utils.SleepCheck("bkb") && menuValue.IsEnabled(bkb.Name) && me.Distance2D(target) <= 620)
                         {
                             bkb.UseAbility();
                             Utils.Sleep(150 + Game.Ping, "bkb");
@@ -143,7 +161,7 @@ namespace TemplerA
                         }
 
 
-                        if (blink != null && blink.CanBeCasted() && menuValue.IsEnabled(blink.Name) &&  me.Distance2D(target) > 500 && me.Distance2D(target) <= 1170 && Utils.SleepCheck("blink"))
+                        if (blink != null && blink.CanBeCasted() && menuValue.IsEnabled(blink.Name) && me.Distance2D(target) > 500 && me.Distance2D(target) <= 1170 && Utils.SleepCheck("blink"))
                         {
                             blink.UseAbility(target.Position);
                             Utils.Sleep(250 + Game.Ping, "blink");
@@ -162,11 +180,23 @@ namespace TemplerA
                             Utils.Sleep(250 + Game.Ping, "Meld");
                         }
 
-                                
-                        if (!Meld.CanBeCasted() && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
+                        if (me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Utils.SleepCheck("attack1"))
                         {
                             me.Attack(target);
+                            Utils.Sleep(150, "attack1");
+                        }
+
+
+                        if (!Meld.CanBeCasted() && Utils.SleepCheck("Meld") && Menu.Item("orbwalk").GetValue<bool>() && !me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
+                        {
+                            Orbwalking.Orbwalk(target);
                             Utils.Sleep(Game.Ping + 150, "attack2");
+                        }
+
+                        if (!Menu.Item("orbwalk").GetValue<bool>() && !Meld.CanBeCasted() && Utils.SleepCheck("attack3") && me.Distance2D(target) <= attackrange)
+                        {
+                            me.Attack(target);
+                            Utils.Sleep(Game.Ping + 150, "attack3");
                         }
 
                         if (!me.IsAttacking() && me.Distance2D(target) >= attackrange && Utils.SleepCheck("follow"))
@@ -176,7 +206,7 @@ namespace TemplerA
                         }
                     }
 
-                    else if (Utils.SleepCheck("attack1"))
+                    else if (Utils.SleepCheck("attack1") && !Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
                     {
                         me.Attack(target);
                         Utils.Sleep(150, "attack1");
@@ -195,7 +225,7 @@ namespace TemplerA
             if (!Game.IsChatOpen)
             {
                 if (Menu.Item("comboKey").GetValue<KeyBind>().Active)
-                {                 
+                {
                     combo = true;
                 }
                 else
@@ -203,7 +233,7 @@ namespace TemplerA
                     combo = false;
                 }
 
-                
+
 
             }
 
