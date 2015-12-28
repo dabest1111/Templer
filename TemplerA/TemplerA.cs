@@ -109,9 +109,17 @@ namespace TemplerA
                 {
                     if (target != null && !target.IsVisible && !Orbwalking.AttackOnCooldown(target))
                     {
-                        target = me.ClosestToMouseTarget(1000);
+                        target = me.ClosestToMouseTarget();
                     }
-                    
+                    else if (target == null || !Orbwalking.AttackOnCooldown(target))
+                    {
+                        var bestAa = me.BestAATarget();
+                        if (bestAa != null)
+                        {
+                            target = me.BestAATarget();
+                        }
+                    }
+
                 }
 
                 if (target != null && target.IsAlive && !target.IsInvul() && !target.IsIllusion)
@@ -189,7 +197,7 @@ namespace TemplerA
 
                         if (!Meld.CanBeCasted() && Utils.SleepCheck("Meld") && Menu.Item("orbwalk").GetValue<bool>() && !me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
                         {
-                            Orbwalking.Orbwalk(target);
+                            Orbwalking.Orbwalk(target, Game.Ping, attackmodifiers: true);
                             Utils.Sleep(Game.Ping + 150, "attack2");
                         }
 
