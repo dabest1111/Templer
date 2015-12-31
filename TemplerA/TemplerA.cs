@@ -19,7 +19,7 @@ namespace TemplerA
 
 
         private static Ability Refraction, Meld, Trap, ptrap;
-        private static Item blink, bkb, phase, hex;
+        private static Item blink, bkb, phase, hex, manta;
         private static readonly Menu Menu = new Menu("TemplerA", "templera", true, "npc_dota_hero_Templar_Assassin", true);
         private static Hero me, target;
         private static bool combo, psi;
@@ -40,7 +40,7 @@ namespace TemplerA
             Menu.AddToMainMenu();
             var dict = new Dictionary<string, bool>
             {
-               {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}
+              {"item_manta", true }, {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}
             };
             Menu.AddItem(
                 new MenuItem("Items", "Items:").SetValue(new AbilityToggler(dict)));
@@ -84,15 +84,16 @@ namespace TemplerA
             if (hex == null)
                 hex = me.FindItem("item_sheepstick");
 
+            if (manta == null)
+                manta = me.FindItem("item_manta");
+
             if (!menuvalueSet)
             {
                 menuValue = Menu.Item("Items").GetValue<AbilityToggler>();
                 menuvalueSet = true;
             }
 
-
-
-
+                       
 
 
             if (combo && Menu.Item("enable").GetValue<bool>())
@@ -182,10 +183,24 @@ namespace TemplerA
                         }
 
 
-                        if (me.Distance2D(target) <= attackrange && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
+                        if (!hex.CanBeCasted() && Utils.SleepCheck("hex") && me.Distance2D(target) <= attackrange && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
                         {
                             Meld.UseAbility();
                             Utils.Sleep(250 + Game.Ping, "Meld");
+                        }
+
+
+                        if (manta != null && manta.CanBeCasted() && menuValue.IsEnabled(manta.Name) && Utils.SleepCheck("manta") && me.Distance2D(target) <= attackrange)
+                        {
+                            manta.UseAbility();
+                            Utils.Sleep(150 + Game.Ping, "manta");
+                        }
+
+                        var illusions = ObjectMgr.GetEntities<Hero>().Where(f => f.IsAlive && f.IsControllable && f.Team == me.Team && f.IsIllusion && f.Modifiers.Any(y => y.Name != "modifier_kill")).ToList();
+                        foreach (var illusion in illusions.TakeWhile(illusion => Utils.SleepCheck("illu_attacking" + illusion.Handle)))
+                        {
+                            illusion.Attack(target);
+                            Utils.Sleep(350, "illu_attacking" + illusion.Handle);
                         }
 
                         if (me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Utils.SleepCheck("attack1"))
@@ -194,6 +209,7 @@ namespace TemplerA
                             Utils.Sleep(150, "attack1");
                         }
 
+                        
 
                         if (!Meld.CanBeCasted() && Utils.SleepCheck("Meld") && Menu.Item("orbwalk").GetValue<bool>() && !me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
                         {
