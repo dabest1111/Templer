@@ -182,7 +182,7 @@ namespace TemplerA
                             Utils.Sleep(150 + Game.Ping, "hex");
                         }
 
-                        if (manta != null && manta.CanBeCasted() && menuValue.IsEnabled(manta.Name) && Utils.SleepCheck("manta") && me.Distance2D(target) <= attackrange)
+                        if (manta != null && manta.CanBeCasted() && menuValue.IsEnabled(manta.Name) && Utils.SleepCheck("manta") && me.Distance2D(target) <= attackrange && !me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld"))
                         {
                             manta.UseAbility();
                             Utils.Sleep(150 + Game.Ping, "manta");
@@ -221,11 +221,11 @@ namespace TemplerA
                             Utils.Sleep(Game.Ping + 150, "attack3");
                         }
 
-                        if (!me.IsAttacking() && me.Distance2D(target) >= attackrange && Utils.SleepCheck("follow"))
-                        {
-                            me.Move(Game.MousePosition);
-                            Utils.Sleep(150 + Game.Ping, "follow");
-                        }
+                        //if (!me.IsAttacking() && me.Distance2D(target) >= attackrange && Utils.SleepCheck("follow"))
+                        //{
+                        //    me.Move(Game.MousePosition);
+                        //    Utils.Sleep(150 + Game.Ping, "follow");
+                        //}
                     }
 
                     else if (Utils.SleepCheck("attack1") && !Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
