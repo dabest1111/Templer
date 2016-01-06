@@ -221,11 +221,11 @@ namespace TemplerA
                             Utils.Sleep(Game.Ping + 150, "attack3");
                         }
 
-                        //if (!me.IsAttacking() && me.Distance2D(target) >= attackrange && Utils.SleepCheck("follow"))
-                        //{
-                        //    me.Move(Game.MousePosition);
-                        //    Utils.Sleep(150 + Game.Ping, "follow");
-                        //}
+                        if (!me.IsAttacking() && me.Distance2D(target) >= attackrange && Utils.SleepCheck("follow"))
+                        {
+                            me.Move(Game.MousePosition);
+                            Utils.Sleep(150 + Game.Ping, "follow");
+                        }
                     }
 
                     else if (Utils.SleepCheck("attack1") && !Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
