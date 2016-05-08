@@ -88,7 +88,7 @@ namespace TemplerA
                 manta = me.FindItem("item_manta");
                 
             if (pike == null)
-                pike = me.FindItem("iteam_hurricane_pike");
+                pike = me.FindItem("item_hurricane_pike");
             
             if (!menuvalueSet)
             {
