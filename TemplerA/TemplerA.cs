@@ -40,7 +40,7 @@ namespace TemplerA
             Menu.AddToMainMenu();
             var dict = new Dictionary<string, bool>
             {
-              {"item_manta", true }, {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}, {"item_hurricane_pike", true }
+              {"item_manta", true }, {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}
             };
             Menu.AddItem(
                 new MenuItem("Items", "Items:").SetValue(new AbilityToggler(dict)));
@@ -87,9 +87,6 @@ namespace TemplerA
             if (manta == null)
                 manta = me.FindItem("item_manta");
                 
-            if (pike == null)
-                pike = me.FindItem("item_hurricane_pike");
-            
             if (!menuvalueSet)
             {
                 menuValue = Menu.Item("Items").GetValue<AbilityToggler>();
@@ -128,7 +125,12 @@ namespace TemplerA
 
                 if (target != null && target.IsAlive && !target.IsInvul() && !target.IsIllusion)
                 {
-
+                      
+                       var dragonLance = hero.FindItem("item_dragon_lance", true) ?? hero.FindItem("item_hurricane_pike", true);
+                if (dragonLance != null && dragonLance.IsValid)
+                {
+                    bonus += dragonLance.GetAbilityData("base_attack_range");
+                }
                     var attackrange = 190 + (60 * me.Spellbook.Spell3.Level);
                     if (me.CanAttack() && me.CanCast())
                     {
