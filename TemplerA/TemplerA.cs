@@ -40,7 +40,7 @@ namespace TemplerA
             Menu.AddToMainMenu();
             var dict = new Dictionary<string, bool>
             {
-              {"item_manta", true }, {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}, {"item_hurricane_pike"}
+              {"item_manta", true }, {"item_black_king_bar", true }, { "item_sheepstick", true }, {"item_phase_boots", true }, {"item_blink",true}, {"item_Hurricane_Pike", true }
             };
             Menu.AddItem(
                 new MenuItem("Items", "Items:").SetValue(new AbilityToggler(dict)));
@@ -86,8 +86,10 @@ namespace TemplerA
 
             if (manta == null)
                 manta = me.FindItem("item_manta");
+            
             if (pike == null)    
-                pike = me.FindItem("item_hurricane_pike");
+                pike = me.FindItem("item_Hurricane_Pike");
+            
             if (!menuvalueSet)
             {
                 menuValue = Menu.Item("Items").GetValue<AbilityToggler>();
