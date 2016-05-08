@@ -131,6 +131,9 @@ namespace TemplerA
 
                     var attackrange = 190 + (60 * me.Spellbook.Spell3.Level);
                     if (me.CanAttack() && me.CanCast())
+                    
+                    var attackrange1 = 2500 + (60 * me.Spellbook.Spell3.Level);
+                    
                     {
 
 
@@ -184,10 +187,10 @@ namespace TemplerA
                             hex.UseAbility(target);
                             Utils.Sleep(150 + Game.Ping, "hex");
                             
-                              if (pike != null && pike.CanBeCasted() && menuValue.IsEnabled(pike.Name) && Utils.SleepCheck("pike"))
+                        if (pike != null && pike.CanBeCasted() && menuValue.IsEnabled(pike.Name) && Utils.SleepCheck("pike"))
                         {
                             pike.UseAbility(target);
-                            Utils.Sleep(200 + Game.Ping, "pike");
+                            Utils.Sleep(2000 + Game.Ping, "pike");
                             
                         }
 
@@ -209,10 +212,10 @@ namespace TemplerA
                             Meld.UseAbility();
                             Utils.Sleep(250 + Game.Ping, "Meld");
                             
-                             if (!pike.CanBeCasted() && Utils.SleepCheck("pike") && me.Distance2D(target) <= attackrange && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
+                             if (!pike.CanBeCasted() && Utils.SleepCheck("pike") && me.Distance2D(target) <= attackrange1 && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
                         {
                             Meld.UseAbility();
-                            Utils.Sleep(250 + Game.Ping, "Meld");
+                            Utils.Sleep(2500 + Game.Ping, "Meld");
                             
                         }
                                                 
@@ -221,9 +224,9 @@ namespace TemplerA
                             me.Attack(target);
                             Utils.Sleep(150, "attack1");
                         }
+                   
 
                         
-
                         if (!Meld.CanBeCasted() && Utils.SleepCheck("Meld") && Menu.Item("orbwalk").GetValue<bool>() && !me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Utils.SleepCheck("attack2") && me.Distance2D(target) <= attackrange)
                         {
                             Orbwalking.Orbwalk(target, Game.Ping, attackmodifiers: true);
