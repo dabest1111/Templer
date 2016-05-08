@@ -132,7 +132,8 @@ namespace TemplerA
                     var attackrange = 190 + (60 * me.Spellbook.Spell3.Level);
                     if (me.CanAttack() && me.CanCast())
                     
-                    var attackrange1 = 2500 + (60 * me.Spellbook.Spell3.Level);
+                    var attackrange3 = 2500 + (60 * me.Spellbook.Spell3.Level);
+                    if (me.CanAttack() && me.CanCast())
                     
                     {
 
@@ -190,7 +191,7 @@ namespace TemplerA
                         if (pike != null && pike.CanBeCasted() && menuValue.IsEnabled(pike.Name) && Utils.SleepCheck("pike"))
                         {
                             pike.UseAbility(target);
-                            Utils.Sleep(2000 + Game.Ping, "pike");
+                            Utils.Sleep(150 + Game.Ping, "pike");
                             
                         }
 
@@ -212,10 +213,10 @@ namespace TemplerA
                             Meld.UseAbility();
                             Utils.Sleep(250 + Game.Ping, "Meld");
                             
-                             if (!pike.CanBeCasted() && Utils.SleepCheck("pike") && me.Distance2D(target) <= attackrange1 && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
+                             if (!pike.CanBeCasted() && Utils.SleepCheck("pike") && me.Distance2D(target) <= attackrange3 && Meld.CanBeCasted() && Utils.SleepCheck("Meld"))
                         {
                             Meld.UseAbility();
-                            Utils.Sleep(2500 + Game.Ping, "Meld");
+                            Utils.Sleep(250 + Game.Ping, "Meld");
                             
                         }
                                                 
